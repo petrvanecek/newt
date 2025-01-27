@@ -17,7 +17,7 @@ client.once('ready', () => {
 });
 
 // Bot token
-const token = 'tvůj-discord-bot-token'; // Nahraď správným tokenem
+const token =  process.env.DISCORD_TOKEN; // Nahraď správným tokenem
 client.login(token);
 
 const System = require('./models/System');
