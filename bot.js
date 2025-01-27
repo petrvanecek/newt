@@ -19,3 +19,19 @@ client.once('ready', () => {
 // Bot token
 const token = 'tvůj-discord-bot-token'; // Nahraď správným tokenem
 client.login(token);
+
+const System = require('./models/System');
+
+client.on('messageCreate', async message => {
+  if (message.content.startsWith('/newt create')) {
+    const systemName = message.content.replace('/newt create ', '').trim();
+    const newSystem = new System({
+      name: systemName,
+      bodies: [],
+      version_history: [],
+    });
+    
+    await newSystem.save();
+    message.reply(`Nový planetární systém "${systemName}" byl vytvořen s ID ${newSystem._id}`);
+  }
+});
