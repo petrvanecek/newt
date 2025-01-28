@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const mongoose = require('mongoose');
 
 // Nastavení MongoDB
-const mongoURI = 'tvůj-mongo-connection-string'; // Nahraď správným connection stringem
+const mongoURI = process.env.MONGO_URI;
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected!'))
   .catch(err => console.log(err));
