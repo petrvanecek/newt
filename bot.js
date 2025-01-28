@@ -24,6 +24,7 @@ const System = require('./models/System');
 
 client.on('messageCreate', async message => {
   if (message.content.startsWith('/newt create')) {
+    console.log('creating system');
     const systemName = message.content.replace('/newt create ', '').trim();
     const newSystem = new System({
       name: systemName,
