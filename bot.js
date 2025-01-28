@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const mongoose = require('mongoose');
 
@@ -9,21 +11,20 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Vytvoření Discord bota
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
 
 client.once('ready', () => {
   console.log(`Bot is ready as ${client.user.tag}`);
 });
 
-// Bot token
-const token =  process.env.DISCORD_TOKEN; // Nahraď správným tokenem
+const token =  process.env.DISCORD_TOKEN; 
 client.login(token);
 
 const System = require('./models/System');
 
 client.on('messageCreate', async message => {
-  console.log('incomming message');
+  console.log(`incomming message: ${message.content}`);
   if (message.content.startsWith('/newt create')) {
     console.log('creating system');
     const systemName = message.content.replace('/newt create ', '').trim();
