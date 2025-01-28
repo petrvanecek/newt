@@ -23,6 +23,7 @@ client.login(token);
 const System = require('./models/System');
 
 client.on('messageCreate', async message => {
+  console.log('incomming message');
   if (message.content.startsWith('/newt create')) {
     console.log('creating system');
     const systemName = message.content.replace('/newt create ', '').trim();
