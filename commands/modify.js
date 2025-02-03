@@ -12,8 +12,8 @@ module.exports = {
         .setName('newt')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('přidej')
-                .setDescription('Přidá nové těleso do domovského systému.')
+                .setName('uprav')
+                .setDescription('Upraví stávající těleso v domovském systému.')
                 //<name> <x> <y> <vx> <vy> <r> <mass> <colorR> <colorG> <colorB></colorB>
                 .addStringOption(option => option.setName('název').setDescription('Jméno tělesa').setRequired(true))
                 .addNumberOption(option => option.setName('x').setDescription('x souřadnice [cAU - setiny AU]').setRequired(true))
@@ -45,42 +45,39 @@ module.exports = {
             }
             
             const planetName = interaction.options.get('název').value
-            const bodyExists = system.bodies.some(body => body.planetName.toLowerCase() === planetName.toLowerCase());
-            if (bodyExists) {
-                await sendErrorEmbed(interaction,`Těleso s názvem "${planetName}" již existuje v systému "${system.systemSlug}".`,'Zkus vymyslet něco originálnějšího...')
+            const bodyIndex = system.bodies.findIndex(body => body.planetName.toLowerCase() === planetName.toLowerCase());
+            //const bodyExists = system.bodies.some(body => body.planetName.toLowerCase() === planetName.toLowerCase());
+            if (Body < 0) {
+                await sendErrorEmbed(interaction,`Těleso s názvem "${planetName}" neexistuje v systému "${system.name}".`,`Zkus se podívat, jaká tělesa jsou k dispozici: \`\`\`/newt seznam ${system.systemSlug}\`\`\``)
                 return
             }
             
-            const newBody = {
-                planetName,
-                params: [
-                    interaction.options.get('x').value,
-                    interaction.options.get('y').value,
-                    interaction.options.get('vx').value,
-                    interaction.options.get('vy').value,
-                    interaction.options.get('hmotnost').value,
-                    interaction.options.get('poloměr').value,
-                    interaction.options.get('červená').value,
-                    interaction.options.get('zelená').value,
-                    interaction.options.get('modrá').value,
-                ]
-            };
-            
-            system.bodies.push(newBody); 
-            
-            const newVersion = (system.version || 0) + 1; 
-                system.version = newVersion; 
-                system.version_history.push({
-                    version: newVersion,
-                    change: `přidáno ${planetName}`,
-                    changedBy: interaction.user.name,
-                    bodies: [...system.bodies], 
-                });
-            
+            system.bodies[bodyIndex].params = [
+                interaction.options.get('x').value,
+                interaction.options.get('y').value,
+                interaction.options.get('vx').value,
+                interaction.options.get('vy').value,
+                interaction.options.get('hmotnost').value,
+                interaction.options.get('poloměr').value,
+                interaction.options.get('červená').value,
+                interaction.options.get('zelená').value,
+                interaction.options.get('modrá').value,
+            ];
+    
+            // Aktualizace verze systému
+            const newVersion = (system.version || 0) + 1;
+            system.version = newVersion;
+            system.version_history.push({
+                version: newVersion,
+                change: `změněno ${planetName}`,
+                changedBy: interaction.user.name,
+                bodies: [...system.bodies], 
+            });
+                
             await system.save();
             
             const imageBuffer = await generatePreview(system.bodies);
-            await sendResponseEmbed(interaction,`Systém ${system.name} - Nový objekt ${newBody.planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
+            await sendResponseEmbed(interaction,`Systém ${system.name} - Aktualizován objekt ${planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)

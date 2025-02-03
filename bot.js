@@ -1,4 +1,112 @@
-const fs = require("fs");
+const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('./messaging');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config();
+
+const mongoose = require('mongoose');
+const mongoURI = process.env.MONGO_URI;
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected!'))
+    .catch(err => console.log(err));
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages,    // Pro zprávy v textových kanálech
+    GatewayIntentBits.MessageContent ] });
+const token =  process.env.DISCORD_TOKEN; 
+client.login(token);
+    
+client.commands = new Collection();
+//const commands = [];
+// Načítání příkazů
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+let newtCommand = new SlashCommandBuilder()
+    .setName('newt')
+    .setDescription('Interacts with the planetary system');
+
+for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    
+    // Přidáme subcommandy
+    if (command.data.name === 'newt') {
+        command.data.options.forEach(subcommand => {
+            newtCommand.addSubcommand(subcommand);
+            client.commands.set(subcommand.name, command);
+            console.log(`✅ Loaded command: ${command.data.name}/${subcommand.name}`);
+        });
+    } else {        
+        client.commands.set(command.data.name, command);
+        console.log(`✅ Loaded command: ${command.data.name}`);
+    }
+
+}
+
+//commands.push(newtCommand.toJSON());
+
+// Registrace příkazů na Discord API
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+
+const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
+
+rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID), { body: [newtCommand.toJSON()] })
+    .then(() => console.log('Successfully registered application commands.'))
+    .catch(console.error);
+
+// Event pro zpracování interakcí
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const subcommand = interaction.options.getSubcommand();
+    const command = client.commands.get(subcommand);
+    if (command) {
+        try {
+            await command.execute(interaction);  
+        } catch (error) {
+            console.error(error);
+            await sendErrorEmbed(interaction, `Něco se posralo 🤷‍♀️`, error)
+        }
+    } else {
+        await sendErrorEmbed(interaction, `Tenhle příkaz neznám`, "Ale možná by stálo za to se ho naučit. Co by měl dělat?")
+    }
+});
+
+/*client.on('messageCreate', async message => {
+    if (message.content.startsWith('/newt')) {
+        await help(message, 'help');
+    }
+});*/
+
+/**
+ * Prints help for known commands.
+ * @param {Message} message 
+ * @param {Array<String>} args 
+ */
+async function help(message, args) {
+    console.log(args)
+    if (args.length === 1 || args[1] === 'help') {
+        color = '#0000FF'
+        title = 'Nápověda pro /newt'
+    } else {
+        color = '#FF0000'
+        title = 'Neznámý příkaz'
+    }
+
+    let description = "**Dostupné příkazy:**\n";
+
+    Array.from(client.commands.values()).sort((a,b)=>a.data.order - b.data.order).forEach(command => {
+        description += `- \`${command.data.usage}\`\n  ${command.data.description}\n`
+    });
+
+    await sendEmbed(message, color, title, description)
+}
+
+
+
+/*const fs = require("fs");
 const path = require("path");
 require('dotenv').config();
 const { Client, GatewayIntentBits, EmbedBuilder, AttachmentBuilder, Collection, Message } = require('discord.js');
@@ -9,8 +117,8 @@ const Body = require('./models/body');
 const { generatePreview } = require('./preview');
 const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('./messaging');
 const { getHomeSystem,setHomeSystem } = require('./utils');
-
-// Setup MongoDB
+*/
+/*// Setup MongoDB
 const mongoURI = process.env.MONGO_URI;
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected!'))
@@ -63,7 +171,7 @@ client.on('messageCreate', async message => {
  * @param {Message} message 
  * @param {Array<String>} args 
  */
-async function help(message, args) {
+/*async function help(message, args) {
     console.log(args)
     if (args.length === 1 || args[1] === 'help') {
         color = '#0000FF'

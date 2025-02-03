@@ -1,5 +1,5 @@
-const { Message } = require('discord.js');
-const { setHomeSystem, getHomeSystem } = require('../utils.js');
+const { SlashCommandBuilder, Interaction } = require('discord.js');
+const { setHomeSystem, getHomeSystem, isValidOption } = require('../utils.js');
 const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('../messaging');
 const mongoose = require('mongoose');
 const User = require('../models/User');
@@ -7,45 +7,42 @@ const System = require('../models/System');
 const Body = require('../models/body');
 
 module.exports = {
-    data: {
-        name: "create",
-        order: 1,
-        description: "Vytvoří nový planetární systém a vygeneruje system-id a nastaví jej jako domovský. Pokud chcete víceslovný název, musí být \"v uvozovkách\".",        
-        usage: "/newt create <název>"
-    },
+    data: new SlashCommandBuilder()
+        .setName('newt')
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('vytvoř')
+                .setDescription('Vytvoří nový planetární systém a vygeneruje system-id.')
+                .addStringOption(option => option.setName('název').setDescription('Jméno systému').setRequired(true))
+        ),
     /**
      * 
-     * @param {Message} message 
+     * @param {Interaction} interaction 
      * @param {Array<String>} args 
      * @returns 
      */
-    async execute(message, args) {
-        console.log("Creating new system")  
+    async execute(interaction) {
+        let args = []
         try {
-            if(args.length == 2) {
-                sendInfoEmbed(message, `Příkaz create`, `${this.data.description}\n\`\`\`${this.data.usage}\`\`\``)
+            if(!isValidOption(interaction, 'název')) {
+                sendErrorEmbed(interaction, `Chybné parametry`, `Přečti si nápovědu.`)
                 return
             }
-
-            if(args.length != 3) {
-                sendErrorEmbed(message, `Chybné parametry`, `${this.data.description}\n\`\`\`${this.data.usage}\`\`\``)
-                return   
-            }
-
-            const systemName = args[2]
+        
+            const systemName = interaction.options.get('název').value
             const newSystem = new System({
                 name: systemName,
-                createdBy: message.author.id,
+                createdBy: interaction.user.id,
                 version: 0,
                 bodies: [],
                 version_history: [],
             });  
             await newSystem.save();
-            await sendInfoEmbed(message,`Nový planetární systém.`,`Byl vytvořen systém "${systemName}" (ID: ${newSystem.systemSlug})`);
-            setHomeSystem(message, newSystem.systemSlug)
+            await sendResponseEmbed(interaction,`Nový planetární systém.`,`Vytvořila jsem Ti systém "${systemName}" (ID: ${newSystem.systemSlug})`);
+            setHomeSystem(interaction, newSystem.systemSlug)
         } catch (error) {
             console.log(error)
-            await sendResponseEmbed(message,`Něco se nepovedlo`, error.text)
+            await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)
         }
     }
 };

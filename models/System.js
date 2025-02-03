@@ -16,7 +16,7 @@ const systemSchema = new mongoose.Schema({
     version: Number,
     timestamp: { type: Date, default: Date.now },
     change: String,
-    body: String,
+    changedBy: String,
     bodies: [bodySchema],
   }],
 });
