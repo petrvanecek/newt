@@ -43,6 +43,11 @@ module.exports = {
                 await sendErrorEmbed(interaction, 'Nemáš nastavený platný domovský systém', 'Možná bys mohl nějaký vytvořit\n```/newt vytvoř <název>```podívat se, jaké systémy jsou k dispozici: ```/newt seznam```nebo si nějaký vybrat: ```/newt domov```')
                 return
             }
+
+            if(system.locked) {
+                await sendErrorEmbed(interaction, 'Systém je zamčený', 'Tenhle systém nejde upravovat. Můžeš si vytvořit kopii: ```/newt kopie```')
+                return
+            }
             
             const planetName = interaction.options.get('název').value
             const bodyIndex = system.bodies.findIndex(body => body.planetName.toLowerCase() === planetName.toLowerCase());

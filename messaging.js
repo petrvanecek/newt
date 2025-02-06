@@ -35,7 +35,7 @@ async function sendInfoEmbed(message, title, description, image) {
 }
 
 async function sendResponseEmbed(message, title, description, image, ephemeral=false) {
-    sendEmbed(message, '#00FF00', title, description, image)
+    sendEmbed(message, '#00FF00', title, description, image, ephemeral)
 }
 
 module.exports = { sendErrorEmbed, sendInfoEmbed, sendResponseEmbed, sendEmbed };

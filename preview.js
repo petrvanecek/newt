@@ -37,7 +37,7 @@ async function generatePreview(bodies) {
     const bodiesList = getBodyList(bodies)
 
     const minsize = 400
-    const scaleFactor = Math.max(1.5, 2.0*Math.max(...bodiesList.flatMap(body => [Math.abs(body.x), Math.abs(body.y)]))/100)
+    const scaleFactor = Math.max(0.0001, 2.0*Math.max(...bodiesList.flatMap(body => [Math.abs(body.x), Math.abs(body.y)]))/100)
     const canvas = createCanvas(minsize, minsize);
     const ctx = canvas.getContext('2d');
 
@@ -50,10 +50,12 @@ async function generatePreview(bodies) {
     for (let t=0; t<1000; t++) {
         ctx.fillStyle = 'rgba(0,0,0,0.01)';
         ctx.fillRect(-100*scaleFactor,-100*scaleFactor, 200*scaleFactor, 200*scaleFactor);
-        Body.simulate(bodiesList)
+        for(let s=0; s<1000; s++)
+            Body.simulate(bodiesList)
         for (let b = 0; b < bodiesList.length; ++b) {
             ctx.beginPath()                     
-            let minradius = Math.max(bodiesList[b].r / 2 / (minsize/200/scaleFactor), 3*(minsize/200/scaleFactor))
+            let minradius = Math.max(bodiesList[b].r / 2, 1/(minsize/200/scaleFactor))
+            //let minradius = bodiesList[b].r
             ctx.arc(bodiesList[b].x, bodiesList[b].y, minradius, 0, 2 * Math.PI);
             ctx.fillStyle = `rgba(${bodiesList[b].colorR}, ${bodiesList[b].colorG}, ${bodiesList[b].colorB}, ${0.01+ Math.pow(t/1000.0,2)})`
             ctx.fill()

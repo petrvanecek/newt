@@ -35,7 +35,7 @@ module.exports = {
             let versionOpt = interaction.options.get('verze')
             let bodies
             if(versionOpt) {
-                version = versionOpt.version
+                version = versionOpt.value
                 const foundVersion = system.version_history.find(v => v.version === version);
                 if (!foundVersion) {
                     await sendErrorEmbed(interaction, `Verze systému "${system.name}.${version}" neexistuje`, `Nechceš se podívat, jaké má verze: \`\`\`/newt verze\`\`\``)

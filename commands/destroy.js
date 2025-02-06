@@ -12,8 +12,8 @@ module.exports = {
         .setName('newt')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('verze')
-                .setDescription('Zobrazí poslední změny domovského systému.')
+                .setName('znič')
+                .setDescription('Zničí domovský systém (pokud jsi majitel). NEVRATNÁ AKCE!')
         ),
     /**
      * 
@@ -29,18 +29,17 @@ module.exports = {
                 return
             }
 
-            if (!system.version_history || system.version_history.length === 0) {
-                await sendInfoEmbed(interaction, `Žádné verze`, `Systém "${system.systemSlug}" zatím nemá žádnou verzi.`);
-                return;
+            if(system.createdBy !== interaction.user.id) {
+                await sendErrorEmbed(interaction, 'Nejsi majitel', 'Tohle není tvůj systém, nemůžeš ho zamknout.')
+                return
+            }
+
+            if(system.locked) {
+                await sendErrorEmbed(interaction, 'Zamčeno', 'Tenhle systém jsi už zamknul dřív. Nemůžeš ho teď smazat.')
+                return
             }
     
-            const history = system.version_history
-                .sort((a, b) => b.version - a.version)
-                .slice(0, 10) 
-                .map(v => `**v${v.version} (${new Date(v.timestamp).toLocaleDateString("cs-CZ")}):** ${v.change} [${v.changeBy}]`)
-                .join("\n");
-
-            await sendInfoEmbed(interaction, `Historie verzí - ${system.name}`, history);
+            await sendResponseEmbed(interaction,`Systém "${system.name}" byl zničen`,'Nesmutněte, je celá řada dalších... ```/newt seznam```');
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)

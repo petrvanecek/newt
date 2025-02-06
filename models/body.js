@@ -1,6 +1,6 @@
 ﻿class Body {
-	static G = 0.000889;
-	static dt = 0.1;
+	static G = 0.0008839256107721075;
+	static dt = 0.001;
 
 	constructor(name, x, y, vx, vy, mass, r, colorR, colorG, colorB) {
 		this.name = name;

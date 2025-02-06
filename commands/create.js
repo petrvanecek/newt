@@ -34,6 +34,7 @@ module.exports = {
                 name: systemName,
                 createdBy: interaction.user.id,
                 version: 0,
+                locked: false,
                 bodies: [],
                 version_history: [],
             });  

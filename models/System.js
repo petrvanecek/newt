@@ -11,6 +11,7 @@ const systemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   version: { type: Number },
   createdBy: { type: String, required: true },
+  locked: { type: Boolean, reauired: true },
   bodies: [bodySchema],
   version_history: [{
     version: Number,

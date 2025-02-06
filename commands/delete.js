@@ -34,6 +34,11 @@ module.exports = {
                 return
             }
             
+            if(system.locked) {
+                await sendErrorEmbed(interaction, 'Systém je zamčený', 'Tenhle systém nejde upravovat. Můžeš si vytvořit kopii: ```/newt kopie```')
+                return
+            }
+
             const planetName = interaction.options.get('název').value
             const bodyIndex = system.bodies.findIndex(body => body.planetName.toLowerCase() === planetName.toLowerCase());
             //const bodyExists = system.bodies.some(body => body.planetName.toLowerCase() === planetName.toLowerCase());
