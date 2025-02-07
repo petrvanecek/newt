@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, Interaction } = require('discord.js');
+const { SlashCommandBuilder, Interaction, AttachmentBuilder } = require('discord.js');
 const { setHomeSystem, getHomeSystem, areValidOptions } = require('../utils.js');
 const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('../messaging.js');
 const mongoose = require('mongoose');
@@ -81,8 +81,21 @@ module.exports = {
                 
             await system.save();
             
-            const imageBuffer = await generatePreview(system.bodies);
-            await sendResponseEmbed(interaction,`Systém ${system.name} - Aktualizován objekt ${planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
+            const imageBuffer = await generatePreview(system.bodies,1);
+            let { progressMessage, embed } = await sendResponseEmbed(interaction,`Systém ${system.name} - Aktualizován objekt ${planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
+
+            for(let i = 1000; i<5000; i+=1000) {
+
+                let imageUrl = await generatePreview(system.bodies, i);  // Funkce pro generování obrázku
+
+                let attachment = new AttachmentBuilder(imageUrl, { name: 'preview.png' });
+                embed.setImage('attachment://preview.png');
+        
+                await progressMessage.edit({
+                    embeds: [embed],
+                    files: [attachment]
+                });
+            }
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)

@@ -33,11 +33,11 @@ function getPreviewUrlData(bodies) {
     return JSON.stringify(bodiesArray)
 }
 
-async function generatePreview(bodies) {
+function generatePreview(bodies, days = 100) {
     const bodiesList = getBodyList(bodies)
 
     const minsize = 400
-    const scaleFactor = Math.max(0.0001, 2.0*Math.max(...bodiesList.flatMap(body => [Math.abs(body.x), Math.abs(body.y)]))/100)
+    const scaleFactor = Math.max(0.0001, 1.2*Math.max(...bodiesList.flatMap(body => [Math.abs(body.x), Math.abs(body.y)]))/100)
     const canvas = createCanvas(minsize, minsize);
     const ctx = canvas.getContext('2d');
 
@@ -47,37 +47,22 @@ async function generatePreview(bodies) {
     ctx.scale(minsize/200/scaleFactor,minsize/200/scaleFactor)
 
 
-    for (let t=0; t<1000; t++) {
-        ctx.fillStyle = 'rgba(0,0,0,0.01)';
-        ctx.fillRect(-100*scaleFactor,-100*scaleFactor, 200*scaleFactor, 200*scaleFactor);
+    for (let t=0; t<days; t++) {
+        /*ctx.fillStyle = 'rgba(0,0,0,0.01)';
+        ctx.fillRect(-100*scaleFactor,-100*scaleFactor, 200*scaleFactor, 200*scaleFactor);*/
         for(let s=0; s<1000; s++)
             Body.simulate(bodiesList)
         for (let b = 0; b < bodiesList.length; ++b) {
             ctx.beginPath()                     
             let minradius = Math.max(bodiesList[b].r / 2, 1/(minsize/200/scaleFactor))
-            //let minradius = bodiesList[b].r
             ctx.arc(bodiesList[b].x, bodiesList[b].y, minradius, 0, 2 * Math.PI);
-            ctx.fillStyle = `rgba(${bodiesList[b].colorR}, ${bodiesList[b].colorG}, ${bodiesList[b].colorB}, ${0.01+ Math.pow(t/1000.0,2)})`
+            ctx.fillStyle = `rgba(${bodiesList[b].colorR}, ${bodiesList[b].colorG}, ${bodiesList[b].colorB}, ${0.01 + Math.pow(t/(days+0.0),10)})`
             ctx.fill()
         }
     }
 
-    /*    // Nakreslení planet
-    system.bodies.forEach(body => {
-        const [x, y, vx, vy, r, mass, colorR, colorG, colorB] = body.params;
-        
-        ctx.fillStyle = `rgb(${colorR}, ${colorG}, ${colorB})`;
-        ctx.beginPath();
-        ctx.arc(x + width / 2, y + height / 2, r, 0, Math.PI * 2);
-        ctx.fill();
-    });*/
-
     // Uložení do bufferu
     const buffer = canvas.toBuffer('image/png');
-
-/*    // Pro uložení souboru (nepovinné)
-    const filePath = path.join(__dirname, 'preview.png');
-    fs.writeFileSync(filePath, buffer);*/
 
     return buffer;
 }

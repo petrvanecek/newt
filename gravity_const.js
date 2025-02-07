@@ -7,7 +7,9 @@ console.log(G / (cAU**3 / (Mearth*time**2)))
 
 if(process.argv.length>1) {
 	switch(process.argv[2]) {
-		case "v" : console.log(parseFloat(process.argv[3])/cAU*time)
-        case "d" : console.log(parseFloat(process.argv[3])/cAU)
+		case "v" : console.log(parseFloat(process.argv[3])/cAU*time); break;
+        case "d" : console.log(parseFloat(process.argv[3])/cAU); break;
+        case "m" : console.log(parseFloat(process.argv[3])/Mearth); break;
+		case "a" : console.log(`${parseFloat(process.argv[3])/cAU} ${parseFloat(process.argv[4])/cAU*time} ${parseFloat(process.argv[5])/Mearth}`); break;
 	}
 }

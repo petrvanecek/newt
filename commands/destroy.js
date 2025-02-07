@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, Interaction } = require('discord.js');
+const { SlashCommandBuilder, Interaction, ModalBuilder, TextInputBuilder,TextInputStyle, ActionRowBuilder } = require('discord.js');
 const { setHomeSystem, getHomeSystem, isValidOption } = require('../utils.js');
 const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('../messaging.js');
 const { getPreviewUrlData, generatePreview } = require('../preview.js');
@@ -30,16 +30,45 @@ module.exports = {
             }
 
             if(system.createdBy !== interaction.user.id) {
-                await sendErrorEmbed(interaction, 'Nejsi majitel', 'Tohle není tvůj systém, nemůžeš ho zamknout.')
+                await sendErrorEmbed(interaction, 'Nejsi majitel', 'Tohle není tvůj systém, nemůžeš ho zničit.')
                 return
             }
 
             if(system.locked) {
-                await sendErrorEmbed(interaction, 'Zamčeno', 'Tenhle systém jsi už zamknul dřív. Nemůžeš ho teď smazat.')
+                await sendErrorEmbed(interaction, 'Zamčeno', 'Tenhle systém jsi zamknul. Nemůžeš ho teď zničit.')
                 return
             }
     
-            await sendResponseEmbed(interaction,`Systém "${system.name}" byl zničen`,'Nesmutněte, je celá řada dalších... ```/newt seznam```');
+            const modal = new ModalBuilder()
+                .setCustomId('confirmDestroySystem')
+                .setTitle('Potvrzení smazání');
+
+            const input = new TextInputBuilder()
+                .setCustomId('destroyConfirmation')
+                .setLabel(`Napiš "smazat" pro potvrzení`)
+                .setStyle(TextInputStyle.Short)
+                .setRequired(true);
+
+            modal.addComponents(new ActionRowBuilder().addComponents(input));
+
+            await interaction.showModal(modal);
+        
+            const filter = (i) => i.customId === 'confirmDestroySystem' && i.user.id === interaction.user.id;
+            try {
+                const confirmation = await interaction.awaitModalSubmit({ filter, time: 60000 });
+    
+                if (confirmation.fields.getTextInputValue('destroyConfirmation').toLowerCase() === 'smazat') {
+                    await system.deleteOne();
+                    await confirmation.deferUpdate(); 
+                    await sendResponseEmbed(interaction, `Systém **${system.name}** byl úspěšně zničen.`, 'Tak jsi to dokázal... Co dál?\n\nMůžeš se podívat co bys tak ještě zničil... ```/newt seznam``` \n\nTaky si nezapomeň nastavit nový domov```/newt domov```')
+                } else {
+                    await confirmation.deferUpdate(); 
+                    await sendErrorEmbed(interaction, 'Tak nic, no.', 'Nezadal jsi správné potvrzení. Nic se ničit nebude')
+                }
+            } catch (error) {
+                await sendErrorEmbed(interaction, 'Tak nic, no.', 'Nezadal jsi včas potvrzení. Nic se ničit nebude')
+            }
+    
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)
