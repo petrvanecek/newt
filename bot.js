@@ -60,6 +60,15 @@ rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUIL
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
+    console.log(`📥 Přijatý příkaz: ${interaction.commandName} ${interaction.options.getSubcommand()}`);
+
+    if (interaction.commandName === 'newt') {
+        if (interaction.options.getSubcommand() === 'předveď') {
+            await interaction.reply('Příkaz předveď byl spuštěn!');
+        }
+    }
+
+
     const subcommand = interaction.options.getSubcommand();
     const command = client.commands.get(subcommand);
     if (command) {
