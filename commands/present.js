@@ -12,7 +12,7 @@ module.exports = {
         .setName('newt')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('předveď')
+                .setName('predved')
                 .setDescription('Ukáže všem domovský systému, případně konkrétní verzi (podobně jako ukaž).')
                 .addIntegerOption(option => option.setName('verze').setDescription('verze').setRequired(false))
         ),
