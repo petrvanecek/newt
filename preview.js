@@ -1,3 +1,5 @@
+const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('./messaging.js');
+const { SlashCommandBuilder, Interaction, AttachmentBuilder } = require('discord.js');
 const { createCanvas } = require('canvas');
 const System = require('./models/System');
 const Body = require('./models/body');
@@ -31,6 +33,21 @@ function getPreviewUrlData(bodies) {
         body.params[8]
     ]);
     return JSON.stringify(bodiesArray)
+}
+
+async function updatePreview(bodies, embed, progressMessage) {
+    for (let i = 1000; i < 5000; i += 1000) {
+
+        let imageUrl = await generatePreview(bodies, i); // Funkce pro generování obrázku
+
+        let attachment = new AttachmentBuilder(imageUrl, { name: 'preview.png' });
+        embed.setImage('attachment://preview.png');
+
+        await progressMessage.edit({
+            embeds: [embed],
+            files: [attachment]
+        });
+    }
 }
 
 function generatePreview(bodies, days = 100) {
@@ -67,4 +84,4 @@ function generatePreview(bodies, days = 100) {
     return buffer;
 }
 
-module.exports = { generatePreview, getPreviewUrlData };
+module.exports = { generatePreview, getPreviewUrlData, updatePreview };

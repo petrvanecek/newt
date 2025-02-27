@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, Interaction, AttachmentBuilder } = require('discord.js');
 const { setHomeSystem, getHomeSystem, isValidOption } = require('../utils.js');
 const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('../messaging.js');
-const { getPreviewUrlData, generatePreview } = require('../preview.js');
+const { getPreviewUrlData, generatePreview, updatePreview } = require('../preview.js');
 const mongoose = require('mongoose');
 const User = require('../models/User.js');
 const System = require('../models/System.js');
@@ -56,21 +56,11 @@ module.exports = {
 
             console.log(`SHOW> ${interaction.user.id} zobrazil systém ${system.name} (verze ${version})`)
 
-            for(let i = 1000; i<5000; i+=1000) {
-
-                let imageUrl = await generatePreview(bodies, i);  // Funkce pro generování obrázku
-
-                let attachment = new AttachmentBuilder(imageUrl, { name: 'preview.png' });
-                embed.setImage('attachment://preview.png');
-        
-                await progressMessage.edit({
-                    embeds: [embed],
-                    files: [attachment]
-                });
-            }
+            await updatePreview(bodies, embed, progressMessage);
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)
         }
     }
 };
+

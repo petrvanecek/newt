@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const User = require('../models/User.js');
 const System = require('../models/System.js');
 const Body = require('../models/body.js');
-const { getPreviewUrlData, generatePreview } = require('../preview.js');
+const { getPreviewUrlData, generatePreview, updatePreview } = require('../preview.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -65,18 +65,7 @@ module.exports = {
             const imageBuffer = await generatePreview(system.bodies,1);
             let { progressMessage, embed } = await sendResponseEmbed(interaction,`Systém ${system.name} - Smazán objekt ${planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
 
-            for(let i = 1000; i<5000; i+=1000) {
-
-                let imageUrl = await generatePreview(system.bodies, i);  // Funkce pro generování obrázku
-
-                let attachment = new AttachmentBuilder(imageUrl, { name: 'preview.png' });
-                embed.setImage('attachment://preview.png');
-        
-                await progressMessage.edit({
-                    embeds: [embed],
-                    files: [attachment]
-                });
-            }
+            await updatePreview(bodies, embed, progressMessage);
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)

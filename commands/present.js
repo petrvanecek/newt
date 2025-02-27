@@ -1,7 +1,8 @@
 const { SlashCommandBuilder, Interaction, AttachmentBuilder } = require('discord.js');
 const { setHomeSystem, getHomeSystem, isValidOption } = require('../utils.js');
 const { sendErrorEmbed, sendResponseEmbed, sendInfoEmbed, sendEmbed } = require('../messaging.js');
-const { getPreviewUrlData, generatePreview } = require('../preview.js');
+const { getPreviewUrlData, generatePreview, updatePreview } = require('../preview.js');
+
 const mongoose = require('mongoose');
 const User = require('../models/User.js');
 const System = require('../models/System.js');
