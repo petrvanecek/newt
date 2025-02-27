@@ -3,7 +3,7 @@ const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config({path: require('find-config')('.env')});
+require('dotenv').config({path: '../.env'});
 
 const mongoose = require('mongoose');
 const mongoURI = process.env.MONGO_URI;
