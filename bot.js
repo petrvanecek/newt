@@ -75,6 +75,22 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.on('ready', async () => {
+    console.log(`✅ Přihlášen jako ${client.user.tag}`);
+
+    const guildId = 'TVŮJ_SERVER_ID'; // ID serveru, kde testuješ
+    const guild = client.guilds.cache.get(guildId);
+    
+    if (!guild) {
+        console.error("❌ Nepodařilo se najít server!");
+        return;
+    }
+
+    await guild.commands.set([...tvé_příkazy]); // Registrace příkazů na server
+    console.log("✅ Příkazy úspěšně registrovány pro GUILD.");
+});
+
+
+/*client.on('ready', async () => {
     console.log("🔍 Kontroluji registrované příkazy...");
 
     const commands = await client.application.commands.fetch();
