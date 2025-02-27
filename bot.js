@@ -26,6 +26,13 @@ let newtCommand = new SlashCommandBuilder()
     .setName('newt')
     .setDescription('Interacts with the planetary system');
 
+    const guild = client.guilds.cache.get(process.env.GUILD_ID);
+    await guild.commands.set([]); // Smaž všechny příkazy
+    console.log("🗑️ Příkazy odstraněny!");
+    
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Počkej 5 sekund, aby Discord stihl provést změny
+    
+
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const command = require(filePath);
