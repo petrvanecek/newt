@@ -85,8 +85,8 @@ client.on('ready', async () => {
         return;
     }
 
-    const commands = await guild.commands.fetch();
-    console.log("📋 Registrované příkazy:", commands.map(cmd => `${cmd.name} (${cmd.id})`));
+    const command = await guild.commands.fetch('1335302361127587950'); // ID hlavního příkazu
+    console.log("📋 Sub-commandy:", command.options?.map(opt => opt.name));
 });
 
 
