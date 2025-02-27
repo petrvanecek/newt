@@ -15,9 +15,8 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
     GatewayIntentBits.MessageContent ] });
 const token =  process.env.DISCORD_TOKEN; 
 client.login(token);
-    
+
 client.commands = new Collection();
-//const commands = [];
 // Načítání příkazů
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -25,13 +24,6 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 let newtCommand = new SlashCommandBuilder()
     .setName('newt')
     .setDescription('Interacts with the planetary system');
-
-    /*const guild = client.guilds.cache.get(process.env.GUILD_ID);
-    await guild.commands.set([]); // Smaž všechny příkazy
-    console.log("🗑️ Příkazy odstraněny!");
-    
-    await new Promise(resolve => setTimeout(resolve, 5000)); // Počkej 5 sekund, aby Discord stihl provést změny*/
-    
 
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
@@ -48,7 +40,6 @@ for (const file of commandFiles) {
         client.commands.set(command.data.name, command);
         console.log(`✅ Loaded command: ${command.data.name}`);
     }
-
 }
 
 //commands.push(newtCommand.toJSON());
@@ -71,15 +62,9 @@ client.on('interactionCreate', async interaction => {
 
     if (interaction.commandName === 'newt') {
         console.log("🔎 Dostupné sub-commandy:", interaction.options.data.map(opt => opt.name));
-
         const subcommand = interaction.options.getSubcommand();
         console.log(`🔹 Zvolený sub-command: ${subcommand}`);
-
-        if (subcommand === 'předveď') {
-            await interaction.reply('Příkaz předveď byl spuštěn!');
-        }
     }
-
 
     const subcommand = interaction.options.getSubcommand();
     const command = client.commands.get(subcommand);
@@ -96,8 +81,7 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.on('ready', async () => {
-    console.log(`✅ Přihlášen jako ${client.user.tag}`);
-
+    console.log(`✅ Přihlášen jako ${client.user.tag}`);    
     const guildId = process.env.GUILD_ID;
     const guild = client.guilds.cache.get(guildId);
 
@@ -106,8 +90,12 @@ client.on('ready', async () => {
         return;
     }
 
-    const command = await guild.commands.fetch('1335302361127587950'); // ID hlavního příkazu
-    console.log("📋 Sub-commandy:", command.options?.map(opt => opt.name));
+    /*guild.commands.set([]); // Smaž všechny příkazy
+    console.log("🗑️ Příkazy odstraněny!");
+    await new Promise(resolve => setTimeout(resolve, 5000));*/
+    /*const commands = await guild.commands.fetch();
+    const command = await guild.commands.fetch(commands.first().applicationId); // ID hlavního příkazu
+    console.log("📋 Sub-commandy:", command.options?.map(opt => opt.name));*/
 });
 
 

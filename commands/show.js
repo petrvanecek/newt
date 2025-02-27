@@ -52,7 +52,7 @@ module.exports = {
             }
         
             let imageBuffer = generatePreview(bodies,1);
-            let { progressMessage, embed } = await sendResponseEmbed(interaction,`Systém ${system.name} (verze ${version}) `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
+            let { progressMessage, embed } = await sendInfoEmbed(interaction,`Systém ${system.name} (verze ${version}) `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
 
             console.log(`SHOW> ${interaction.user.id} zobrazil systém ${system.name} (verze ${version})`)
 
