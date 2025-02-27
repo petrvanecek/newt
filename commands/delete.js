@@ -60,6 +60,8 @@ module.exports = {
 
             await system.save();
 
+            console.log(`DELETE> ${interaction.user.id} smazal ${planetName} v systému ${system.name}`)
+
             const imageBuffer = await generatePreview(system.bodies,1);
             let { progressMessage, embed } = await sendResponseEmbed(interaction,`Systém ${system.name} - Smazán objekt ${planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
 

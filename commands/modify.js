@@ -80,6 +80,8 @@ module.exports = {
             });
                 
             await system.save();
+        
+            console.log(`MODIFY> ${interaction.user.id} změnil ${planetName} v systému ${system.name}`)
             
             const imageBuffer = await generatePreview(system.bodies,1);
             let { progressMessage, embed } = await sendResponseEmbed(interaction,`Systém ${system.name} - Aktualizován objekt ${planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)

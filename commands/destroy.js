@@ -61,6 +61,8 @@ module.exports = {
                     await system.deleteOne();
                     await confirmation.deferUpdate(); 
                     await sendResponseEmbed(interaction, `Systém **${system.name}** byl úspěšně zničen.`, 'Tak jsi to dokázal... Co dál?\n\nMůžeš se podívat co bys tak ještě zničil... ```/newt seznam``` \n\nTaky si nezapomeň nastavit nový domov```/newt domov```')
+
+                    console.log(`DESTROY> ${interaction.user.id} zničil systém ${system.name}`)
                 } else {
                     await confirmation.deferUpdate(); 
                     await sendErrorEmbed(interaction, 'Tak nic, no.', 'Nezadal jsi správné potvrzení. Nic se ničit nebude')

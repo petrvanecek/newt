@@ -84,9 +84,11 @@ module.exports = {
             
             await system.save();
             
+            console.log(`ADD> ${interaction.user.id} přidal ${planetName} do systému ${system.name}`)
+
             const imageBuffer = await generatePreview(system.bodies,1);
             let { progressMessage, embed } = await sendResponseEmbed(interaction,`Systém ${system.name} - Nový objekt ${newBody.planetName} `, `[live view](https://newt.vanecek.info/?data=${getPreviewUrlData(system.bodies)})`, imageBuffer)
-
+            
             for(let i = 1000; i<5000; i+=1000) {
 
                 let imageUrl = await generatePreview(system.bodies, i);  // Funkce pro generování obrázku

@@ -34,6 +34,7 @@ module.exports = {
                 var system = await setHomeSystem(interaction, systemName.value)
                 if(system) {
                     sendInfoEmbed(interaction, `Tvůj aktuální systém byl změněn`, `### ${system.name} [${system.systemSlug}]\nPočet těles: ${system.bodies.length}\nPoslední verze: ${system.version}`)
+                    console.log(`HOME> ${interaction.user.id} si nastavil systém ${system.name}`)
                 }
                 return
             }

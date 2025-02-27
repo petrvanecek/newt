@@ -41,6 +41,9 @@ module.exports = {
             await newSystem.save();
             await sendResponseEmbed(interaction,`Nový planetární systém.`,`Vytvořila jsem Ti systém "${systemName}" (ID: ${newSystem.systemSlug})`);
             setHomeSystem(interaction, newSystem.systemSlug)
+
+            console.log(`CREATE> ${interaction.user.id} vytvořil systém ${system.name}`)
+
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)

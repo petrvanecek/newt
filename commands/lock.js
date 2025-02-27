@@ -42,6 +42,9 @@ module.exports = {
             system.locked = true
             await system.save();
             await sendResponseEmbed(interaction,`Systém "${system.name}" je zamčený`,`Systém není možné měnit. Můžeš si vytvořit kopii: \`\`\`/newt kopie\`\`\``);
+
+            console.log(`LOCK> ${interaction.user.id} zamkl systém ${system.name}`)
+
         } catch (error) {
             console.log(error)
             await sendErrorEmbed(interaction,`Něco se nepovedlo`, error.text)

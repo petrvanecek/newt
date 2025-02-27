@@ -41,6 +41,8 @@ module.exports = {
     
             system.locked = false
             await system.save();
+            console.log(`UNLOCK> ${interaction.user.id} odemkl systém ${system.name}`)
+
             await sendResponseEmbed(interaction,`Systém "${system.name}" je odemčený`,`Každý ho může volně editovat.`);
         } catch (error) {
             console.log(error)
