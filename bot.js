@@ -74,6 +74,20 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+client.on('ready', async () => {
+    console.log("🔍 Kontroluji registrované příkazy...");
+
+    const commands = await client.application.commands.fetch();
+    console.log(commands.map(cmd => `${cmd.name} (${cmd.id})`));
+
+    const newtCommand = commands.find(cmd => cmd.name === 'newt');
+    if (newtCommand) {
+        console.log(`🔍 Subcommands for /newt: ${JSON.stringify(newtCommand.options, null, 2)}`);
+    } else {
+        console.log("⚠️ /newt nebyl nalezen mezi registrovanými příkazy!");
+    }
+});
+
 /*client.on('messageCreate', async message => {
     if (message.content.startsWith('/newt')) {
         await help(message, 'help');
@@ -85,7 +99,7 @@ client.on('interactionCreate', async interaction => {
  * @param {Message} message 
  * @param {Array<String>} args 
  */
-async function help(message, args) {
+/*async function help(message, args) {
     console.log(args)
     if (args.length === 1 || args[1] === 'help') {
         color = '#0000FF'
@@ -104,7 +118,7 @@ async function help(message, args) {
     await sendEmbed(message, color, title, description)
 }
 
-
+*/
 
 /*const fs = require("fs");
 const path = require("path");
